@@ -5,5 +5,9 @@ type ButtonProps = {
 };
 
 export default function Button({ children }: ButtonProps) {
-  return <button className="bg-slate-700 rounded-2xl">{children}</button>;
+  return (
+    <button className="bg-slate-300 text-slate-900 rounded-2xl">
+      {children}
+    </button>
+  );
 }
