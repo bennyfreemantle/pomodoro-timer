@@ -7,7 +7,7 @@ import { RxHamburgerMenu } from "react-icons/rx";
 const defaultValues = {
   currentMode: "WORK",
   rounds: 0,
-  workTime: 5000,
+  workTime: 1500000,
   shortBreak: 900000,
   longBreak: 1500000,
 };

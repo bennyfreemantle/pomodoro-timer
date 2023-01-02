@@ -103,6 +103,7 @@ export default function Clock({ settings, setSettings }: ClockProps) {
           strokeWidth="10"
           strokeLinecap="round"
           fill="#334155"
+          strokeLinejoin="round"
         />
         <text
           x="180"
