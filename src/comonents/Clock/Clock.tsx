@@ -1,17 +1,86 @@
-import React from "react";
-import useCountdown from "../../hooks/useCountdown";
+import React, { useEffect, useRef, useState } from "react";
+import { TimerValuesContext } from "../../context/TimerValuesContext";
+import { useContext } from "react";
 import formatMillisecondsToTime from "../../utils/formatMillisecondsToTime";
 
 export default function Clock() {
-  const [time, pause, resume] = useCountdown(25000000000);
-  const timeString = formatMillisecondsToTime(time);
+  const { settings, setSettings } = useContext(TimerValuesContext);
+  const [mode, setMode] = useState(settings.currentMode);
+  const modeRef = useRef(mode);
+  const millisecond =
+    mode === "WORK"
+      ? settings.workTime
+      : mode === "SHORT"
+      ? settings.shortBreak
+      : settings.longBreak;
+
+  const [time, setTime] = useState(millisecond);
+  const [isPaused, setIsPaused] = useState(true);
+
+  const strokeDasharray = 1005;
+  const strokeDasharrayOffSetRef = useRef(strokeDasharray);
+  const difference = strokeDasharray / (millisecond / 1000);
+
+  function updateRadialProgress() {
+    strokeDasharrayOffSetRef.current -= difference;
+    // TODO bugfix - radial progress goes beyond 0, this is a quick fix
+    if (strokeDasharrayOffSetRef.current < 0) {
+      strokeDasharrayOffSetRef.current = 0;
+    }
+  }
+
+  function switchMode() {
+    let nextMode;
+
+    if (settings.rounds !== 0 && settings.rounds % 4 === 0) {
+      nextMode = modeRef.current === "WORK" ? "LONG" : "WORK";
+    } else {
+      nextMode = modeRef.current === "WORK" ? "SHORT" : "WORK";
+    }
+    modeRef.current = nextMode;
+    setMode(modeRef.current);
+    setSettings({
+      ...settings,
+      currentMode: modeRef.current,
+      rounds: (settings.rounds += 1),
+    });
+
+    if (modeRef.current === "WORK") {
+      setTime(settings.workTime);
+    } else if (modeRef.current === "SHORT") {
+      setTime(settings.shortBreak);
+    } else {
+      setTime(settings.longBreak);
+    }
+
+    // reset radial
+    strokeDasharrayOffSetRef.current = strokeDasharray;
+  }
+
+  let interval: number;
+
+  useEffect(() => {
+    interval = setInterval(() => {
+      if (isPaused) {
+        return;
+      }
+      if (time > 0) {
+        setTime((time) => time - 1000);
+        updateRadialProgress();
+      } else {
+        switchMode();
+      }
+    }, 1000);
+    console.log(settings);
+    return () => clearInterval(interval);
+  }, [isPaused, time]);
 
   return (
-    <div className="flex items-center justify-center mt-8">
+    <div className="flex flex-col items-center justify-center mt-8">
       <svg
         className=""
-        strokeDasharray={1005}
-        strokeDashoffset={100}
+        strokeDasharray={strokeDasharray}
+        strokeDashoffset={strokeDasharrayOffSetRef.current} // 10.05 == 1%
         height="360"
         width="360"
       >
@@ -33,9 +102,15 @@ export default function Clock() {
           alignmentBaseline="middle"
           fontFamily="Helvetica"
         >
-          {timeString}
+          {formatMillisecondsToTime(time)}
         </text>
       </svg>
+      <button
+        className="text-slate-200 text-2xl border p-2 mx-2 my-2 w-2/5 rounded-2xl bg-slate-800"
+        onClick={() => (isPaused ? setIsPaused(false) : setIsPaused(true))}
+      >
+        {isPaused ? "Resume" : "Pause"}
+      </button>
     </div>
   );
 }

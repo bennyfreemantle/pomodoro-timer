@@ -2,9 +2,9 @@ import { useEffect, useState } from "react";
 
 export default function useCountdown(
   timeLeft: number
-): [number, () => void, () => void] {
+): [number, boolean, () => void, () => void, (timeLeft: number) => void] {
   const [time, setTime] = useState(timeLeft);
-  const [isPaused, setIsPaused] = useState(false);
+  const [isPaused, setIsPaused] = useState(true);
 
   let interval: number;
 
@@ -29,5 +29,5 @@ export default function useCountdown(
     setIsPaused(false);
   }
 
-  return [time, pause, resume];
+  return [time, isPaused, pause, resume, setTime];
 }

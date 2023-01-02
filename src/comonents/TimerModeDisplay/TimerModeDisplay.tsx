@@ -1,6 +1,9 @@
 import React from "react";
-
+import { TimerValuesContext } from "../../context/TimerValuesContext";
+import { useContext } from "react";
 export default function TimerModeDisplay() {
+  const { settings, setSettings } = useContext(TimerValuesContext);
+  // console.log(settings);
   return (
     <div className="my-4 w-auto">
       <ul className="flex gap-5 p-1 text-xl bg-slate-800 rounded-2xl">

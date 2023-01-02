@@ -1,12 +1,10 @@
-import { useState } from "react";
-import Button from "../Button/Button";
+import React, { useEffect, useState } from "react";
+
 import Clock from "../Clock/Clock";
 import TimerModeDisplay from "../TimerModeDisplay/TimerModeDisplay";
 import { RxHamburgerMenu } from "react-icons/rx";
 
 function App() {
-  const [count, setCount] = useState(0);
-
   return (
     <div className="flex flex-col min-h-screen p-3 items-center bg-slate-900">
       <div className="flex flex-col max-w-3xl flex-1 w-full text-center">
