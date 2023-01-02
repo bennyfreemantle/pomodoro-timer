@@ -1,10 +1,20 @@
 import React, { useEffect, useRef, useState } from "react";
-import { TimerValuesContext } from "../../context/TimerValuesContext";
-import { useContext } from "react";
 import formatMillisecondsToTime from "../../utils/formatMillisecondsToTime";
 
-export default function Clock() {
-  const { settings, setSettings } = useContext(TimerValuesContext);
+type ClockProps = {
+  settings: Settings;
+  setSettings: (settings: Settings) => void;
+};
+
+type Settings = {
+  currentMode: string;
+  rounds: number;
+  workTime: number;
+  shortBreak: number;
+  longBreak: number;
+};
+
+export default function Clock({ settings, setSettings }: ClockProps) {
   const [mode, setMode] = useState(settings.currentMode);
   const modeRef = useRef(mode);
   const millisecond =
@@ -29,8 +39,15 @@ export default function Clock() {
     }
   }
 
+  function incrementRound() {
+    if (modeRef.current === "WORK") {
+      setSettings({ ...settings, rounds: (settings.rounds += 1) });
+    }
+  }
+
   function switchMode() {
     let nextMode;
+    incrementRound();
 
     if (settings.rounds !== 0 && settings.rounds % 4 === 0) {
       nextMode = modeRef.current === "WORK" ? "LONG" : "WORK";
@@ -42,7 +59,6 @@ export default function Clock() {
     setSettings({
       ...settings,
       currentMode: modeRef.current,
-      rounds: (settings.rounds += 1),
     });
 
     if (modeRef.current === "WORK") {
@@ -71,7 +87,6 @@ export default function Clock() {
         switchMode();
       }
     }, 1000);
-    console.log(settings);
     return () => clearInterval(interval);
   }, [isPaused, time]);
 
