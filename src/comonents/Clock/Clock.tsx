@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from "react";
+import { useEffect, useState } from "react";
 import formatMillisecondsToTime from "../../utils/formatMillisecondsToTime";
 
 type ClockProps = {
@@ -15,32 +15,23 @@ type Settings = {
 };
 
 export default function Clock({ settings, setSettings }: ClockProps) {
-  const [mode, setMode] = useState(settings.currentMode);
-  const modeRef = useRef(mode);
-  const millisecond =
-    mode === "WORK"
-      ? settings.workTime
-      : mode === "SHORT"
-      ? settings.shortBreak
-      : settings.longBreak;
+  let interval: number;
+  const [milliseconds, setMilliseconds] = useState(settings.workTime);
 
-  const [time, setTime] = useState(millisecond);
+  const [time, setTime] = useState(milliseconds);
   const [isPaused, setIsPaused] = useState(true);
 
-  const strokeDasharray = 1005;
-  const strokeDasharrayOffSetRef = useRef(strokeDasharray);
-  const difference = strokeDasharray / (millisecond / 1000);
+  const strokeDasharray = 1005; // Magic number (2 PI * r)
+  const [strokeDasharrayOffSet, setStrokeDasharrayOffSet] =
+    useState(strokeDasharray);
+  const difference = strokeDasharray / (milliseconds / 1000);
 
   function updateRadialProgress() {
-    strokeDasharrayOffSetRef.current -= difference;
-    // TODO bugfix - radial progress goes beyond 0, this is a quick fix
-    if (strokeDasharrayOffSetRef.current < 0) {
-      strokeDasharrayOffSetRef.current = 0;
-    }
+    setStrokeDasharrayOffSet((prev) => prev - difference);
   }
 
   function incrementRound() {
-    if (modeRef.current === "WORK") {
+    if (settings.currentMode === "WORK") {
       setSettings({ ...settings, rounds: (settings.rounds += 1) });
     }
   }
@@ -50,30 +41,35 @@ export default function Clock({ settings, setSettings }: ClockProps) {
     incrementRound();
 
     if (settings.rounds !== 0 && settings.rounds % 4 === 0) {
-      nextMode = modeRef.current === "WORK" ? "LONG" : "WORK";
+      nextMode = settings.currentMode === "WORK" ? "LONG" : "WORK";
     } else {
-      nextMode = modeRef.current === "WORK" ? "SHORT" : "WORK";
+      nextMode = settings.currentMode === "WORK" ? "SHORT" : "WORK";
     }
-    modeRef.current = nextMode;
-    setMode(modeRef.current);
+
     setSettings({
       ...settings,
-      currentMode: modeRef.current,
+      currentMode: nextMode,
     });
 
-    if (modeRef.current === "WORK") {
-      setTime(settings.workTime);
-    } else if (modeRef.current === "SHORT") {
-      setTime(settings.shortBreak);
-    } else {
-      setTime(settings.longBreak);
+    switch (nextMode) {
+      case "WORK":
+        setMilliseconds(settings.workTime);
+        setTime(settings.workTime);
+        break;
+      case "SHORT":
+        setMilliseconds(settings.shortBreak);
+        setTime(settings.shortBreak);
+        break;
+      case "LONG":
+        setMilliseconds(settings.longBreak);
+        setTime(settings.longBreak);
+        break;
+      default:
+        return "Error";
     }
-
     // reset radial
-    strokeDasharrayOffSetRef.current = strokeDasharray;
+    setStrokeDasharrayOffSet(strokeDasharray);
   }
-
-  let interval: number;
 
   useEffect(() => {
     interval = setInterval(() => {
@@ -95,7 +91,7 @@ export default function Clock({ settings, setSettings }: ClockProps) {
       <svg
         className=""
         strokeDasharray={strokeDasharray}
-        strokeDashoffset={strokeDasharrayOffSetRef.current} // 10.05 == 1%
+        strokeDashoffset={strokeDasharrayOffSet} // 10.05 == 1%
         height="360"
         width="360"
       >
