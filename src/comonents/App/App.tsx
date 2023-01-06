@@ -1,15 +1,15 @@
 import React, { useEffect, useState } from "react";
 
-import Clock from "../Clock/Clock";
 import TimerModeDisplay from "../TimerModeDisplay/TimerModeDisplay";
 import { RxHamburgerMenu } from "react-icons/rx";
-import SettingsPanel from "../SettingsPanel/SettingsPanel";
+import Scene from "../Scene/Scene";
 
 export const defaultValues = {
   currentMode: "WORK",
+  currentMilliseconds: 1500000,
   rounds: 0,
   maxRounds: 4,
-  workTime: 5000,
+  workTime: 1500000,
   shortBreak: 900000,
   longBreak: 1500000,
 };
@@ -34,11 +34,11 @@ function App() {
         {settings && (
           <>
             <TimerModeDisplay settings={settings} />
-            {settingsOpen ? (
-              <SettingsPanel settings={settings} setSettings={setSettings} />
-            ) : (
-              <Clock settings={settings} setSettings={setSettings} />
-            )}
+            <Scene
+              settingsOpen={settingsOpen}
+              settings={settings}
+              setSettings={setSettings}
+            />
           </>
         )}
       </div>

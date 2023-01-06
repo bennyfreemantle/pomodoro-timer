@@ -9,6 +9,7 @@ type ClockProps = {
 
 export type Settings = {
   currentMode: string;
+  currentMilliseconds: number;
   rounds: number;
   maxRounds: number;
   workTime: number;
@@ -19,15 +20,22 @@ export type Settings = {
 export default function Clock({ settings, setSettings }: ClockProps) {
   let interval: number;
   const [shouldReset, setShouldReset] = useState(false);
-  const [milliseconds, setMilliseconds] = useState(settings.workTime);
+  const mode =
+    settings.currentMode === "WORK"
+      ? settings.workTime
+      : settings.currentMode === "SHORT"
+      ? settings.shortBreak
+      : settings.longBreak;
+  const [milliseconds, setMilliseconds] = useState(mode);
 
-  const [time, setTime] = useState(milliseconds);
+  const [time, setTime] = useState(settings.currentMilliseconds);
   const [isPaused, setIsPaused] = useState(true);
 
   const strokeDasharray = 1005; // Magic number (2 PI * r)
   const [strokeDasharrayOffSet, setStrokeDasharrayOffSet] =
     useState(strokeDasharray);
-  const difference = strokeDasharray / (milliseconds / 1000);
+  const difference = strokeDasharray / (time / 1000);
+  console.log(difference);
 
   function updateRadialProgress() {
     setStrokeDasharrayOffSet((prev) => prev - difference);
@@ -41,13 +49,11 @@ export default function Clock({ settings, setSettings }: ClockProps) {
 
   function handleReset() {
     setSettings({ ...defaultValues, rounds: 0 });
-    setMilliseconds(settings.workTime);
-    setTime(milliseconds);
+    // setMilliseconds(settings.workTime);
+    // setTime(milliseconds);
     setIsPaused(true);
     setStrokeDasharrayOffSet(strokeDasharray);
     setShouldReset(false);
-
-    console.log(settings);
   }
 
   function switchMode() {
@@ -74,16 +80,21 @@ export default function Clock({ settings, setSettings }: ClockProps) {
 
     switch (nextMode) {
       case "WORK":
-        setMilliseconds(settings.workTime);
+        // setMilliseconds(settings.workTime);
         setTime(settings.workTime);
+        setSettings({ ...settings, currentMilliseconds: settings.workTime });
         break;
       case "SHORT":
-        setMilliseconds(settings.shortBreak);
+        // setMilliseconds(settings.shortBreak);
         setTime(settings.shortBreak);
+        setSettings({ ...settings, currentMilliseconds: settings.shortBreak });
+
         break;
       case "LONG":
-        setMilliseconds(settings.longBreak);
+        // setMilliseconds(settings.longBreak);
         setTime(settings.longBreak);
+        setSettings({ ...settings, currentMilliseconds: settings.longBreak });
+
         break;
       default:
         return "Error";
@@ -97,13 +108,19 @@ export default function Clock({ settings, setSettings }: ClockProps) {
       if (isPaused) {
         return;
       }
-      if (time > 0) {
-        setTime((time) => time - 1000);
+      if (settings.currentMilliseconds > 0) {
+        // setTime((time) => time - 1000);
+
+        setSettings({
+          ...settings,
+          currentMilliseconds: settings.currentMilliseconds - 1000,
+        });
         updateRadialProgress();
       } else {
         switchMode();
       }
     }, 1000);
+
     return () => clearInterval(interval);
   }, [isPaused, time, settings]);
 
@@ -135,7 +152,7 @@ export default function Clock({ settings, setSettings }: ClockProps) {
           alignmentBaseline="middle"
           fontFamily="Helvetica"
         >
-          {formatMillisecondsToTime(time)}
+          {formatMillisecondsToTime(settings.currentMilliseconds)}
         </text>
       </svg>
       <div className="flex w-1/4 justify-around">
