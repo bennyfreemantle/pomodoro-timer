@@ -13,7 +13,7 @@ export default function Clock({ settings, setSettings }: ClockProps) {
   const [shouldReset, setShouldReset] = useState(false);
 
   const [time, setTime] = useState(settings.currentMilliseconds);
-  const [isPaused, setIsPaused] = useState(true);
+  const [isPaused, setIsPaused] = useState(false);
 
   const strokeDasharray = 1005; // Magic number (2 PI * r)
   const [strokeDasharrayOffSet, setStrokeDasharrayOffSet] =
