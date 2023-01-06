@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import { useState } from "react";
 
 import TimerModeDisplay from "../TimerModeDisplay/TimerModeDisplay";
 import { RxHamburgerMenu } from "react-icons/rx";

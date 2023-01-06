@@ -1,5 +1,6 @@
 import React from "react";
-import Clock, { Settings } from "../Clock/Clock";
+import { Settings } from "../../types";
+import Clock from "../Clock/Clock";
 import SettingsPanel from "../SettingsPanel/SettingsPanel";
 
 export default function Scene({

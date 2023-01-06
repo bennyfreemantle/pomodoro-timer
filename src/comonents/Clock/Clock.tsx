@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { Settings } from "../../types";
 import formatMillisecondsToTime from "../../utils/formatMillisecondsToTime";
 import { defaultValues } from "../App/App";
 
@@ -7,26 +8,9 @@ type ClockProps = {
   setSettings: (settings: Settings) => void;
 };
 
-export type Settings = {
-  currentMode: string;
-  currentMilliseconds: number;
-  rounds: number;
-  maxRounds: number;
-  workTime: number;
-  shortBreak: number;
-  longBreak: number;
-};
-
 export default function Clock({ settings, setSettings }: ClockProps) {
   let interval: number;
   const [shouldReset, setShouldReset] = useState(false);
-  const mode =
-    settings.currentMode === "WORK"
-      ? settings.workTime
-      : settings.currentMode === "SHORT"
-      ? settings.shortBreak
-      : settings.longBreak;
-  const [milliseconds, setMilliseconds] = useState(mode);
 
   const [time, setTime] = useState(settings.currentMilliseconds);
   const [isPaused, setIsPaused] = useState(true);
@@ -49,8 +33,6 @@ export default function Clock({ settings, setSettings }: ClockProps) {
 
   function handleReset() {
     setSettings({ ...defaultValues, rounds: 0 });
-    // setMilliseconds(settings.workTime);
-    // setTime(milliseconds);
     setIsPaused(true);
     setStrokeDasharrayOffSet(strokeDasharray);
     setShouldReset(false);
@@ -80,18 +62,15 @@ export default function Clock({ settings, setSettings }: ClockProps) {
 
     switch (nextMode) {
       case "WORK":
-        // setMilliseconds(settings.workTime);
         setTime(settings.workTime);
         setSettings({ ...settings, currentMilliseconds: settings.workTime });
         break;
       case "SHORT":
-        // setMilliseconds(settings.shortBreak);
         setTime(settings.shortBreak);
         setSettings({ ...settings, currentMilliseconds: settings.shortBreak });
 
         break;
       case "LONG":
-        // setMilliseconds(settings.longBreak);
         setTime(settings.longBreak);
         setSettings({ ...settings, currentMilliseconds: settings.longBreak });
 
@@ -109,8 +88,6 @@ export default function Clock({ settings, setSettings }: ClockProps) {
         return;
       }
       if (settings.currentMilliseconds > 0) {
-        // setTime((time) => time - 1000);
-
         setSettings({
           ...settings,
           currentMilliseconds: settings.currentMilliseconds - 1000,
