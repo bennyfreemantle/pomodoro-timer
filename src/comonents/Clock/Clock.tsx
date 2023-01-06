@@ -6,7 +6,7 @@ type ClockProps = {
   setSettings: (settings: Settings) => void;
 };
 
-type Settings = {
+export type Settings = {
   currentMode: string;
   rounds: number;
   workTime: number;
@@ -121,7 +121,7 @@ export default function Clock({ settings, setSettings }: ClockProps) {
         className="text-slate-200 text-2xl border p-2 mx-2 my-2 w-2/5 rounded-2xl bg-slate-800"
         onClick={() => (isPaused ? setIsPaused(false) : setIsPaused(true))}
       >
-        {isPaused ? "Resume" : "Pause"}
+        {isPaused ? "Start" : "Pause"}
       </button>
     </div>
   );
