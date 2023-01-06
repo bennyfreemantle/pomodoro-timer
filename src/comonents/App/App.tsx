@@ -8,6 +8,7 @@ import SettingsPanel from "../SettingsPanel/SettingsPanel";
 export const defaultValues = {
   currentMode: "WORK",
   rounds: 0,
+  maxRounds: 4,
   workTime: 1500000,
   shortBreak: 900000,
   longBreak: 1500000,

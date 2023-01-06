@@ -70,6 +70,23 @@ export default function SettingsForm({
           {formatMillisecondsToTime(settings.longBreak)}
         </p>
       </div>
+      <div className="flex gap-4 w-1/2 justify-evenly">
+        <label className="text-slate-200" htmlFor="rounds">
+          Rounds Until Long Break
+        </label>
+        <input
+          onChange={(e) =>
+            setSettings({ ...settings, maxRounds: parseInt(e.target.value) })
+          }
+          type="range"
+          value={settings.maxRounds}
+          min={1}
+          max={10}
+          step={1}
+          id="rounds"
+        />
+        <p className="text-slate-200">{settings.maxRounds}</p>
+      </div>
     </form>
   );
 }

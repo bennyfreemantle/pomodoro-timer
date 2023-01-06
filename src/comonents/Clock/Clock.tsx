@@ -9,6 +9,7 @@ type ClockProps = {
 export type Settings = {
   currentMode: string;
   rounds: number;
+  maxRounds: number;
   workTime: number;
   shortBreak: number;
   longBreak: number;
@@ -40,7 +41,7 @@ export default function Clock({ settings, setSettings }: ClockProps) {
     let nextMode;
     incrementRound();
 
-    if (settings.rounds !== 0 && settings.rounds % 4 === 0) {
+    if (settings.rounds !== 0 && settings.rounds % settings.maxRounds === 0) {
       nextMode = settings.currentMode === "WORK" ? "LONG" : "WORK";
     } else {
       nextMode = settings.currentMode === "WORK" ? "SHORT" : "WORK";
@@ -117,8 +118,18 @@ export default function Clock({ settings, setSettings }: ClockProps) {
           {formatMillisecondsToTime(time)}
         </text>
       </svg>
+      <div className="flex w-1/4 justify-around">
+        {[...Array(settings.maxRounds)].map((n, i) => (
+          <div
+            key={i}
+            className={`w-5 h-5 rounded-full ${
+              i + 1 <= settings.rounds ? "bg-slate-300" : "bg-slate-800"
+            }`}
+          ></div>
+        ))}
+      </div>
       <button
-        className="text-slate-200 text-2xl border p-2 mx-2 my-2 w-2/5 rounded-2xl bg-slate-800"
+        className="text-slate-200 text-2xl border p-2 my-8 mx-2 w-2/5 rounded-2xl bg-slate-800"
         onClick={() => (isPaused ? setIsPaused(false) : setIsPaused(true))}
       >
         {isPaused ? "Start" : "Pause"}
