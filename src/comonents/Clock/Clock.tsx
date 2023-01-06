@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import formatMillisecondsToTime from "../../utils/formatMillisecondsToTime";
+import { defaultValues } from "../App/App";
 
 type ClockProps = {
   settings: Settings;
@@ -17,6 +18,7 @@ export type Settings = {
 
 export default function Clock({ settings, setSettings }: ClockProps) {
   let interval: number;
+  const [shouldReset, setShouldReset] = useState(false);
   const [milliseconds, setMilliseconds] = useState(settings.workTime);
 
   const [time, setTime] = useState(milliseconds);
@@ -37,8 +39,26 @@ export default function Clock({ settings, setSettings }: ClockProps) {
     }
   }
 
+  function handleReset() {
+    setSettings({ ...defaultValues, rounds: 0 });
+    setMilliseconds(settings.workTime);
+    setTime(milliseconds);
+    setIsPaused(true);
+    setStrokeDasharrayOffSet(strokeDasharray);
+    setShouldReset(false);
+
+    console.log(settings);
+  }
+
   function switchMode() {
     let nextMode;
+
+    if (settings.rounds === settings.maxRounds) {
+      // reset
+      setShouldReset(true);
+      return;
+    }
+
     incrementRound();
 
     if (settings.rounds !== 0 && settings.rounds % settings.maxRounds === 0) {
@@ -85,7 +105,7 @@ export default function Clock({ settings, setSettings }: ClockProps) {
       }
     }, 1000);
     return () => clearInterval(interval);
-  }, [isPaused, time]);
+  }, [isPaused, time, settings]);
 
   return (
     <div className="flex flex-col items-center justify-center mt-8">
@@ -130,9 +150,15 @@ export default function Clock({ settings, setSettings }: ClockProps) {
       </div>
       <button
         className="text-slate-200 text-2xl border p-2 my-8 mx-2 w-2/5 rounded-2xl bg-slate-800"
-        onClick={() => (isPaused ? setIsPaused(false) : setIsPaused(true))}
+        onClick={() =>
+          shouldReset
+            ? handleReset()
+            : isPaused
+            ? setIsPaused(false)
+            : setIsPaused(true)
+        }
       >
-        {isPaused ? "Start" : "Pause"}
+        {shouldReset ? "Reset" : isPaused ? "Start" : "Pause"}
       </button>
     </div>
   );
