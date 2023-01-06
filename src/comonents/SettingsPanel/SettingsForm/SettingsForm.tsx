@@ -1,6 +1,6 @@
 import React, { useState } from "react";
+import { Settings } from "../../../types";
 import formatMillisecondsToTime from "../../../utils/formatMillisecondsToTime";
-import { Settings } from "../../Clock/Clock";
 
 export default function SettingsForm({
   settings,

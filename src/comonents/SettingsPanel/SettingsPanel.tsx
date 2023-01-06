@@ -1,5 +1,5 @@
 import React from "react";
-import { Settings } from "../Clock/Clock";
+import { Settings } from "../../types";
 import SettingsForm from "./SettingsForm/SettingsForm";
 
 export default function SettingsPanel({
