@@ -55,24 +55,31 @@ export default function Clock({ settings, setSettings }: ClockProps) {
       nextMode = settings.currentMode === "WORK" ? "SHORT" : "WORK";
     }
 
-    setSettings({
-      ...settings,
-      currentMode: nextMode,
-    });
-
     switch (nextMode) {
       case "WORK":
         setTime(settings.workTime);
-        setSettings({ ...settings, currentMilliseconds: settings.workTime });
+        setSettings({
+          ...settings,
+          currentMilliseconds: settings.workTime,
+          currentMode: nextMode,
+        });
         break;
       case "SHORT":
         setTime(settings.shortBreak);
-        setSettings({ ...settings, currentMilliseconds: settings.shortBreak });
+        setSettings({
+          ...settings,
+          currentMilliseconds: settings.shortBreak,
+          currentMode: nextMode,
+        });
 
         break;
       case "LONG":
         setTime(settings.longBreak);
-        setSettings({ ...settings, currentMilliseconds: settings.longBreak });
+        setSettings({
+          ...settings,
+          currentMilliseconds: settings.longBreak,
+          currentMode: nextMode,
+        });
 
         break;
       default:
